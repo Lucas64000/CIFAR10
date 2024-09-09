@@ -1,2 +1,1 @@
 # CIFAR10
-# CIFAR10

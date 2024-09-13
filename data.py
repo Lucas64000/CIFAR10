@@ -3,8 +3,6 @@ from torchvision import datasets
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import v2
 
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 
 def unpickle(file):

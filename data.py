@@ -31,7 +31,7 @@ def getDatasets(data_path='./data/cifar-10-batches-py/', mean=None, std=None):
     # Define processing pipeline
     processing = v2.Compose([
         v2.ToImage(),
-        v2.ToDtype(torch.float32, scale=True)
+        v2.ToDtype(torch.float32, scale=True),
         v2.Normalize(mean=mean, std=std)
     ]) if mean is not None and std is not None else None
 

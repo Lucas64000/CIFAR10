@@ -19,20 +19,20 @@ def getClassNames(file='./data/cifar-10-batches-py/batches.meta'):
 
 # Convert images to tensors and normalize their values using the computed mean and std (cf Notebook)
 
-def getDatasets(data_path='./data/cifar-10-batches-py/', data_process=True):
-    # If data_process is True, apply the transformations, otherwise set to None
-    if data_process:
-        # Mean and standard deviation for normalization (Refer to the data notebook, cell 10, for how the values were obtained.)
-        mean = torch.tensor([0.4914, 0.4822, 0.4465])
-        std = torch.tensor([0.2470, 0.2435, 0.2616])
-        
-        processing = v2.Compose([
-            v2.ToImage(),
-            v2.ToDtype(torch.float32, scale=True),
-            v2.Normalize(mean=mean, std=std),
-        ])
-    else:
-        processing = None
+def getDatasets(data_path='./data/cifar-10-batches-py/', mean=None, std=None):
+    # Default values (Refer to the cell 10 of the data notebook to know how the values were obtained)
+    default_mean = torch.tensor([0.4914, 0.4822, 0.4465])
+    default_std = torch.tensor([0.2470, 0.2435, 0.2616])
+    
+    # Use provided values or fall back to defaults
+    mean = mean if mean is not None else default_mean
+    std = std if std is not None else default_std
+
+    # Define processing pipeline
+    processing = v2.Compose([
+        v2.ToTensor(),
+        v2.Normalize(mean=mean, std=std)
+    ]) if mean is not None and std is not None else None
 
     # Load CIFAR10 datasets with or without processing
     cifar10_train = datasets.CIFAR10(data_path, train=True, transform=processing, download=True)

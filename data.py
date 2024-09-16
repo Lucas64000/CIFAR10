@@ -41,8 +41,8 @@ def getDatasets(data_path='./data/cifar-10-batches-py/', mean=None, std=None):
 
     return cifar10_train, cifar10_val
 
-def getDataLoaders(batch_size=64, shuffle=True):
-    cifar10_train, cifar10_val = getDatasets()
+def getDataLoaders(batch_size=64, shuffle=True, mean=None, std=None):
+    cifar10_train, cifar10_val = getDatasets(mean=mean, std=std)
     
     train_dataloader = DataLoader(cifar10_train, batch_size=batch_size, shuffle=shuffle)
     val_dataloader = DataLoader(cifar10_val, batch_size=batch_size, shuffle=shuffle)

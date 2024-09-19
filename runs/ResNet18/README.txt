@@ -1,0 +1,1 @@
+Models are saved as {n_layers}-{n_epochs}-{optimizer}

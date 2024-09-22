@@ -3,7 +3,18 @@ from torchvision import datasets
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import v2
 
+import os
 import matplotlib.pyplot as plt
+
+# Default values (Refer to the cell 10 of the data notebook to know how the values were obtained)
+MEAN = torch.tensor([0.4914, 0.4822, 0.4465])
+STD = torch.tensor([0.2470, 0.2435, 0.2616])
+
+basic_processing = v2.Compose([
+    v2.ToImage(),
+    v2.ToDtype(torch.float32, scale=True),
+    v2.Normalize(mean=MEAN, std=STD)
+]) 
 
 def unpickle(file):
     import pickle
@@ -19,33 +30,18 @@ def getClassNames(file='./data/cifar-10-batches-py/batches.meta'):
 
 # Convert images to tensors and normalize their values using the computed mean and std (cf Notebook)
 
-def getDatasets(data_path='./data/cifar-10-batches-py/', mean=None, std=None):
-    # Default values (Refer to the cell 10 of the data notebook to know how the values were obtained)
-    default_mean = torch.tensor([0.4914, 0.4822, 0.4465])
-    default_std = torch.tensor([0.2470, 0.2435, 0.2616])
-    
-    # Use provided values or fall back to defaults
-    mean = mean if mean is not None else default_mean
-    std = std if std is not None else default_std
-
-    # Define processing pipeline
-    processing = v2.Compose([
-        v2.ToImage(),
-        v2.ToDtype(torch.float32, scale=True),
-        v2.Normalize(mean=mean, std=std)
-    ]) if mean is not None and std is not None else None
-
+def getDatasets(data_path='./data/cifar-10-batches-py/', transform=basic_processing):
     # Load CIFAR10 datasets with or without processing
-    cifar10_train = datasets.CIFAR10(data_path, train=True, transform=processing, download=True)
-    cifar10_val = datasets.CIFAR10(data_path, train=False, transform=processing, download=True)
+    cifar10_train = datasets.CIFAR10(data_path, train=True, transform=transform, download=True)
+    cifar10_val = datasets.CIFAR10(data_path, train=False, transform=transform, download=True)
 
     return cifar10_train, cifar10_val
 
-def getDataLoaders(batch_size=64, shuffle=True, mean=None, std=None):
-    cifar10_train, cifar10_val = getDatasets(mean=mean, std=std)
+def getDataLoaders(batch_size=64, shuffle=True, transform=basic_processing):
+    cifar10_train, cifar10_val = getDatasets(transform=transform)
     
-    train_dataloader = DataLoader(cifar10_train, batch_size=batch_size, shuffle=shuffle)
-    val_dataloader = DataLoader(cifar10_val, batch_size=batch_size, shuffle=shuffle)
+    train_dataloader = DataLoader(cifar10_train, batch_size=batch_size, shuffle=shuffle, num_workers=os.cpu_count(), pin_memory=True)
+    val_dataloader = DataLoader(cifar10_val, batch_size=batch_size, shuffle=shuffle, num_workers=os.cpu_count(), pin_memory=True)
     
     return train_dataloader, val_dataloader
         
